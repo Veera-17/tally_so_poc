@@ -28,8 +28,6 @@ def tally_webhook(request):
     print('WEBHOOK CALLED-----------')
     if request.method == 'POST':
         data = json.loads(request.body)
-        print(f"RAW DATA: {data}")
-
         fields = data.get('data', {}).get('fields', [])
         email = None
         message = None
@@ -43,8 +41,6 @@ def tally_webhook(request):
                 message = field.get('value')
             elif label == '':  # If label is empty, assume it's the feedback
                 message = field.get('value')
-
-        print(f"Extracted: email={email}, message={message}")
 
         if email and message:
             try:
