@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-tn-0lx%(u&dt3^*&uk&x2c7(rxe!8-l#=0g-3fun41ugj&bd9+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['4de2-183-83-148-11.ngrok-free.app']
+ALLOWED_HOSTS = ['127.0.0.1',
+    '4de2-183-83-148-11.ngrok-free.app'
+    ]
 CSRF_TRUSTED_ORIGINS = [
     "https://4de2-183-83-148-11.ngrok-free.app",  # replace with your actual ngrok domain
 ]
@@ -86,6 +88,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'main.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
