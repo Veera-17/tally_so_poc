@@ -16,6 +16,7 @@ class UserAdmin(BaseUserAdmin):
                 "batch_date",
                 "staff_first_name",
                 "staff_last_name",
+                "phone_number",
             )
         }),
     )
@@ -29,6 +30,7 @@ class UserAdmin(BaseUserAdmin):
                 "batch_date",
                 "staff_first_name",
                 "staff_last_name",
+                "phone_number",
             )
         }),
     )

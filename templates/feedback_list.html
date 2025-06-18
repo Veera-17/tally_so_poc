@@ -126,9 +126,11 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             flex-wrap: wrap;
             gap: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .feedback-author {
@@ -143,9 +145,68 @@
             font-weight: 500;
         }
 
+        .feedback-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detail-section h4 {
+            color: #2d3748;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-value {
+            color: #4a5568;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .detail-value.null {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .star {
+            color: #f6ad55;
+            font-size: 1.2rem;
+        }
+
+        .star.empty {
+            color: #e2e8f0;
+        }
+
         .feedback-message {
             color: #4a5568;
             line-height: 1.6;
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .timestamp {
+            color: #a0aec0;
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 0.5rem;
         }
 
         .empty-state {
@@ -231,6 +292,30 @@
                 width: 100%;
                 max-width: 300px;
             }
+
+            .feedback-details {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .detail-section {
+                padding: 0.75rem;
+            }
+
+            .detail-section h4 {
+                font-size: 0.8rem;
+            }
+
+            .detail-value {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
         }
     </style>
 </head>
@@ -257,10 +342,103 @@
                     {% for feedback in feedbacks %}
                         <li class="feedback-item">
                             <div class="feedback-header">
-                                <div class="feedback-author">{{ feedback.user.get_full_name }}</div>
+                                <div class="feedback-author">{{ feedback.user.get_full_name|default:feedback.user.username }}</div>
                                 <div class="feedback-email">{{ feedback.user.email }}</div>
                             </div>
-                            <div class="feedback-message">{{ feedback.message }}</div>
+                            <div class="feedback-details">
+                                <!-- User Details Section -->
+                                <div class="detail-section">
+                                    <h4>User Information</h4>
+                                    <div class="detail-value">
+                                        <strong>Branch Location:</strong> 
+                                        <span class="{% if not feedback.user.branch_location %}null{% endif %}">
+                                            {{ feedback.user.branch_location|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Course Details:</strong> 
+                                        <span class="{% if not feedback.user.course_details %}null{% endif %}">
+                                            {{ feedback.user.course_details|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Enrolment Number:</strong> 
+                                        <span class="{% if not feedback.user.enrolment_number %}null{% endif %}">
+                                            {{ feedback.user.enrolment_number|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Batch Date:</strong> 
+                                        <span class="{% if not feedback.user.batch_date %}null{% endif %}">
+                                            {{ feedback.user.batch_date|date:"M d, Y"|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Staff Name:</strong> 
+                                        <span class="{% if not feedback.user.staff_first_name and not feedback.user.staff_last_name %}null{% endif %}">
+                                            {% if feedback.user.staff_first_name or feedback.user.staff_last_name %}
+                                                {{ feedback.user.staff_first_name|default:"" }} {{ feedback.user.staff_last_name|default:"" }}
+                                            {% else %}
+                                                Not provided
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Phone Number:</strong> 
+                                        <span class="{% if not feedback.user.phone_number %}null{% endif %}">
+                                            {{ feedback.user.phone_number|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Feedback Details Section -->
+                                <div class="detail-section">
+                                    <h4>Feedback Details</h4>
+                                    <div class="detail-value">
+                                        <strong>Rating:</strong> 
+                                        <span class="rating-stars">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= feedback.rating %}
+                                                    <span class="star">&#9733;</span>
+                                                {% else %}
+                                                    <span class="star empty">&#9734;</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if feedback.rating %}
+                                                ({{ feedback.rating }}/5)
+                                            {% else %}
+                                                <span class="null">Not rated</span>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Source of Visit:</strong> 
+                                        <span class="{% if not feedback.source_of_visit %}null{% endif %}">
+                                            {{ feedback.source_of_visit|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Received Books:</strong> 
+                                        <span class="{% if not feedback.received_books %}null{% endif %}">
+                                            {{ feedback.received_books|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-value">
+                                        <strong>Received Kit:</strong> 
+                                        <span class="{% if not feedback.received_kit %}null{% endif %}">
+                                            {{ feedback.received_kit|default:"Not provided" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if feedback.message %}
+                                <div class="feedback-message">
+                                    <strong>Message:</strong> {{ feedback.message }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="timestamp">{{ feedback.created_at|timesince }} ago</div>
                         </li>
                     {% endfor %}
                 </ul>
