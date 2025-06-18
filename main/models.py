@@ -3,27 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 class Feedback(models.Model):
-    class RatingChoices(models.IntegerChoices):
-        ONE = 1, '1 - Poor'
-        TWO = 2, '2 - Fair'
-        THREE = 3, '3 - Good'
-        FOUR = 4, '4 - Very Good'
-        FIVE = 5, '5 - Excellent'
-
-    class SourceOfVisitChoices(models.TextChoices):
-        GOOGLE = 'Google', 'Google'
-        FRIEND = 'Friend', 'Friend'
-        SOCIAL_MEDIA = 'Social Media', 'Social Media'
-        OTHER = 'Other', 'Other'
-
-    class YesNoChoices(models.TextChoices):
-        YES = 'Yes', 'Yes'
-        NO = 'No', 'No'
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
-    rating = models.IntegerField(choices=RatingChoices.choices, null=True, blank=True,)
-    source_of_visit = models.CharField(max_length=50, choices=SourceOfVisitChoices.choices, null=True, blank=True,)
-    received_books = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, blank=True,)
-    received_kit = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, blank=True,)
+    rating = models.IntegerField(null=True, blank=True, default=0)
+    source_of_visit = models.TextField(max_length=100, null=True, blank=True,)
+    received_books = models.TextField(max_length=100, null=True, blank=True,)
+    received_kit = models.TextField(max_length=100, null=True, blank=True,)
     message = models.TextField(null=True, blank=True,)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -37,6 +21,7 @@ class User(AbstractUser):
     batch_date = models.DateField(null=True, blank=True)
     staff_first_name = models.CharField(max_length=100, null=True, blank=True,)
     staff_last_name = models.CharField(max_length=100, null=True, blank=True,)
+    phone_number = models.CharField(unique=True, max_length=10, db_index=True, null=True, blank=True,)
 
     def __str__(self):
         return self.username
